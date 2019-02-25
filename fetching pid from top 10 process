@@ -18,6 +18,7 @@ cat /tmp/cpu_usage.$$ | \
 awk '
 { process[$1]+=$2;
 	pid[$1] = $3;
+#fetching pid from the file cpu_usage.
  }
 END{
 for(i in process)
