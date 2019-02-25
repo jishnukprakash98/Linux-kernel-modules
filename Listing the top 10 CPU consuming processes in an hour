@@ -1,8 +1,8 @@
 #!/bin/bash
 #Name: pcpu_usage.sh
 #Description: Script to calculate cpu usage by processes for 1 hour
-SECS=3600
-UNIT_TIME=60
+SECS=60
+UNIT_TIME=10
 #Change the SECS to total seconds for which monitoring is to be performed.
 #UNIT_TIME is the interval in seconds between each sampling
 STEPS=$(( $SECS / $UNIT_TIME ))
