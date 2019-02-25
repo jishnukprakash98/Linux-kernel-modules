@@ -1,0 +1,28 @@
+#!/bin/bash
+#Name: pcpu_usage.sh
+#Description: Script to calculate cpu usage by processes for 1 hour
+SECS=10
+UNIT_TIME=10
+#Change the SECS to total seconds for which monitoring is to be performed.
+#UNIT_TIME is the interval in seconds between each sampling
+STEPS=$(( $SECS / $UNIT_TIME ))
+echo Watching CPU usage... ;
+for((i=0;i<STEPS;i++))
+do
+  cat /proc/1/stat  >> /tmp/cpu_usage.txt
+  sleep $UNIT_TIME
+done
+echo
+echo CPU eaters :
+cat /tmp/cpu_usage.txt | \
+awk '
+{ process[$1]+=$2; }
+END{
+for(i in process)
+{
+  printf("%-20s %s\n",i, process[i]) ;
+}
+	printf("State: %s\n",$3);
+}' 
+#rm /tmp/cpu_usage.$$
+#Remove the temporary log file
