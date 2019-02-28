@@ -9,12 +9,12 @@ STEPS=$(( $SECS / $UNIT_TIME ))
 echo Watching CPU usage... ;
 for((i=0;i<STEPS;i++))
 do
-  cat /proc/1/stat  >> /tmp/cpu_usage.txt
+  cat /proc/1/stat  >> /tmp/cpu_usage.txt  #copying the stat file to a txt file
   sleep $UNIT_TIME
 done
 echo
 echo CPU eaters :
-cat /tmp/cpu_usage.txt | \
+cat /tmp/cpu_usage.txt | \  #accesing file 
 awk '
 { process[$1]+=$2; }
 END{
@@ -22,7 +22,8 @@ for(i in process)
 {
   printf("%-20s %s\n",i, process[i]) ;
 }
-	printf("State: %s\n",$3);
+	printf("State: %s\n",$3);  
 }' 
+#printing the third element(state) from the file
 #rm /tmp/cpu_usage.$$
 #Remove the temporary log file
