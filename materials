@@ -1,0 +1,9 @@
+https://linux.die.net/man/3/explain_ptrace
+http://man7.org/linux/man-pages/man5/proc.5.html
+https://linux.die.net/man/2/prlimit
+https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.3.0/com.ibm.zos.v2r3.bpxbd00/rsrlim.htm
+https://www.go4expert.com/articles/getrlimit-setrlimit-control-resources-t27477/
+https://www.rdocumentation.org/packages/RAppArmor/versions/0.6.0/topics/rlimit_nproc
+https://blog.sourcerer.io/writing-a-simple-linux-kernel-module-d9dc3762c234
+https://stackoverflow.com/questions/1420426/how-to-calculate-the-cpu-usage-of-a-process-by-pid-in-linux-from-c
+https://www.linuxquestions.org/questions/linux-newbie-8/how-to-get-cpu-usage-of-a-process-63726/
