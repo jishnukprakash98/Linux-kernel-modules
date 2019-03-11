@@ -1,237 +1,254 @@
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-void displayt();
-void showt();
-int checkt();
-void resumet();
-void pauset();
-void parranget();
 
- char pause[20]; 
- char resume[20];
- char a;
- int temp;
- int p[20];
- int r[20];
- int i=-1;//stores the no of paused processes
- int j=0;//keeps track of the no of resumed processes
- int k=0;//general purpose variable
- int l=0;//general purpose variable
- int t;//general purpose variable
- int c=1;
+
+//The structure definition for the linked list
+ struct node
+ {
+	int data;
+	struct node *link;
+ };
+ struct node *head=NULL,*current=NULL,*temp=NULL;
 
 
 
-int main()
-{
+//List of functions used with in the program
+ int AllProcess();
+ int PausedProcess();
+ int Paused();
+ int Resumed();
+ int Check();
 
-int choice;
 
- do
-   {
+
+//The main function begins here
+ int main()
+ {
+
+	char a;
+	int choice;
+	
+   do
    
-   printf("\n\n.....................ENTER YOUR DESIRED CHOICE.......................\n\n");
-   printf("\t1.List of active processes with in the system\n\t2.Pause a process\n\t3.Resume a paused process\n\t4.list of paused process\n");
+   {
+
+   printf("\n\n........................................ENTER YOUR DESIRED CHOICE...........................................\n\n");
+   
+   printf("\t1.List of active processes with in the system\n\t2.Pause a process\n\t3.Resume a paused process\n\t4.List of paused processes\n");
    printf("\n Enter your choice : ");
    scanf("%d",&choice);
-   
+
    switch(choice)
    {
-   	case 1 : displayt();
+   	case 1 : AllProcess();
    		 break;
-   	case 2 : pauset();
+   	case 2 : Paused();
    		 break;
-   	case 3 : resumet();
+   	case 3 : Resumed();
    		 break;
-   	case 4 : showt();
+   	case 4 : Check();
    		 break;
    	default: printf("\n....Invalid Choice.....\n");
    		 break;    
    }
-           
-        printf("Do you want to continue (y/n) ? :");
+
+        printf("\n\nDo you want to continue (y/n) ? :");
         scanf(" %c",&a);   
 
    }while(a=='y');
 }
-
-
-
-
-/////////////////////////FUNCTION TO PAUSE PROCESSES //////////////////////////////////////////
-void pauset()
-{
-l=0;
-	printf("\n\n..................Enter the PIDs of the processes to be PAUSED........................\n\n");
-	do
-	{
-	  
-	  printf("\n\tEnter PID of process No.%d : ",l+1); 
-	  i++;
-	  scanf("%d",&p[i]);
-	  //printf("\n***********THE PROCESS : %d , HAS BEEN PAUSED***********\n",p[i]);
-           sprintf(pause,"kill -STOP %d",p[i]);                                   
-           system(pause);  
-	   i++;
-	  // count++;
-	   printf("\nDo you have another process to pause(y/n) : ");
-	   scanf(" %c",&a);
-	}while(a=='y');  
 	
 
-printf("\n.............................*******..................................\n");
-//i=0;
-}
 
 
 
 
-////////////////////////////FUNCTION TO RESUME THE PAUSED PROCESSES/////////////////////////////
-void resumet()
-{
 
-int flag;
-
- if(i==0)
-	{
-	  	printf("\nAs of yet no process have been paused that can be resumed\n");
-	  	exit(0);
-        }
-	  
-	  
- else  	  
-    {
-	 
-	 printf("\n\n..................Enter the PIDs of the processes to be RESUMED........................\n\n");
-	 do
-	 {
-	  
-	  printf("\n\tEnter PID of process No.%d : ",j+1);
-	  scanf("%d",&temp);//&r[j];
-	  flag=checkt();
-	  
-	
-	  for(k=0;k<i;k++)
-	        {
-	        	if(r[k]==p[l])
-	        	{
-	        	        sprintf(resume,"kill -CONT %d",p[i]);
-       			        system(resume);
-        			printf("The process : %d , has been resumed\n\n",p[i]); 
-	   	        }
-	   	        else
-	   	        	continue;
-	   	        
-	        
-	        }
-	  
-	  //printf("\n***********THE PROCESS : %d , HAS BEEN PAUSED***********\n",p[i]);
-           sprintf(pause,"kill -STOP %d",p[i]);                                   
-           system(pause);  
-	   i++;
-	   printf("\nDo you have another process to pause(y/n) : ");
-	   scanf(" %c",&a);
-	}while(a=='y');  
-
-
-
-}
-
-
-}
-
-
-
-//////////////////////////////////////////This function checks for errors & exceptions////////////////////////////////////////////////////////////
-int checkt()
-{
-
- int flag=0;
- 
-     for(l=0;l<=i;l++)	
-      {
-           
-           if(p[l]==temp)           
-           {	
-           	flag=1;
-           	p[l]=-1;
-           	break;	
-           }	
-           else
-           	continue;
-       }
-       
-  if(flag==1)
-  {
-  	parranget();
-  	return flag;  
-  }
-  else
-  	printf("\nOnly paused processes can be resumed , the input PID doesn't correspond to that of a paused process..\n");     	
-                         
-                 
-	/*for(k=0;k<j;k++)
-	        {
-	        	if(r[k]==p[l])
-	        	{
-	        	        sprintf(resume,"kill -CONT %d",p[i]);
-       			        system(resume);
-        			printf("The process : %d , has been resumed\n\n",p[i]); 
-	   	        }
-	   	        else*/
-  			
-
-}
-
-//////////////////////////////////THIS FUNCTION REARRANGE P[] AFTER ANY PROCESS HAVE BEEN RESUMED//////////////////////////////////////////////////
-
-void parranget()
+ int AllProcess()
  {
-  int count=i+1;
-  
-  for(l=0;l<count;l++)
-  {
-  	if(l+1<=i)
-  	{
-  		if(p[l]==-1)
-  		{
-  			p[l]=p[l+1];
-  			p[l+1]=-1;
-  		}
-  		else
-  			continue;
-  	}
-  	else
-  		continue;
-	
+	printf("\n\n====================================THE LIST OF ALL PROCESSES IN THE SYSTEM===================================\n\n");
+	system("ps all");     
+
  }
 
-}
 
-void showt()
-{
-	l=0;
-	int count=i+1;
-	if(i=-1)
+
+
+ int Paused()
+ {
+  
+	int pid;
+	int i=0;
+	int flag;
+	char a;
+	char pause[20];
+	
+	printf("\n\n.....................Enter the PIDs of the processes to be PAUSED........................\n\n");
+	do
 	{
-		printf("\nThe list is empty\n");
-	}
-	else
+		temp=(struct node*)malloc(sizeof(struct node));
+		
+		repeat : 
+		printf("\nEnter the PID : ");
+		scanf("%d",&pid);
+		
+		flag=Check(pid);//need function call to check whether the process is already paused
+		
+		if(flag==0)
+		{
+			temp->data=pid;
+			temp->link=NULL;
+			sprintf(pause,"kill -STOP %d",temp->data);  
+			system(pause);
+			if(head==NULL)
+			{
+				head=temp;
+				current=temp;
+			}	
+			else
+			{
+				current->link=temp;
+				current=current->link;
+			}
+		
+			printf("\nDo you have another process to pause(y/n) : ");
+			scanf(" %c",&a);
+		}
+		else
+		{
+			printf("\nInvalid Input: Entered PID corresponds to an already Paused process\n");
+			goto repeat;
+		}	
+	}while(a=='y');  
+
+ printf("\n\n");
+
+ }
+ 
+
+
+ 
+ int PausedProcesses()
+ {
+ 
+   int i=1;
+   
+ 	if(head==NULL)
+ 	{
+ 		printf("\n\nNo processes have been paused as of now\n");
+ 	}
+ 	
+ 	else
+ 	{
+ 		temp=head;
+ 	}
+ 	
+ 	while(temp!=NULL)
+ 	{
+ 		printf("\nPROCESS #%d : %d",i,temp->data);
+ 		temp=temp->link;
+ 		i++;
+ 	}
+ 	
+  printf("\n\n");
+  
+ }
+ 
+ 
+ 
+ 
+ int Check(int pid)
+ {
+   
+ 	if(head==NULL)
+ 	{
+ 		return 0;
+ 	}
+ 	
+ 	else
+ 	{
+ 		temp=head;
+ 	}
+ 	
+ 	while(temp!=NULL)
+ 	{
+ 		if((temp->data)==pid)
+ 		{
+ 			return 1;
+ 		}
+ 		else
+ 		{
+ 			temp=temp->link;
+ 		}
+ 	}
+ 	
+ 	return 0;	
+ 		
+ }
+ 	
+ 
+ 
+ 
+ int Resumed(char resume[20])
+ {
+   char a;
+   int pid;
+   int flag=0;
+   
+   
+   	do
 	{
-	 for(l=0;l<i;l++)
-	 {
-		printf("Process no %d : %d",count,p[i]);
-	 }
-	}
-}
+		
+		if(head==NULL)
+	        {
+		   	printf("\nThere are no processes that can be resumed\n");
+		   	return 0;
+	        }
+	        
+	        else
+	        {
+		
+			repeat : 
+			printf("\nEnter the PID of the process to be resumed : ");
+			scanf("%d",&pid);
+						
+			temp=current=head;
+				
+			while(current!=NULL)
+	 		{
+		 		temp=current;
+		 		current=current->link;
+		 			
+		 		if(current->data==pid)
+		 		{
+		 			sprintf(resume,"kill -CONT %d",current->data);  
+					system(resume);
+		 			temp->link=current->link;
+		 			free(current);
+		 			flag=1;
+		 			break;
+		 		}
+		 				
+		 	}
+	 	
+			if(flag==0)
+			{
+				printf("\nInvalid Input: Entered PID corresponds to a nonexistant process\n");	
+				goto repeat;
+			}
+			else
+			{	
+				printf("\nDo you have another process to resume(y/n) : ");
+				scanf(" %c",&a);
+			}	
+		}
+	}while(a=='y');  
 
-void displayt()
-{
-	system("ps all");  
-}
+ printf("\n\n");
 
+ 
+ 
+ }
 
