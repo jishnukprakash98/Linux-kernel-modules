@@ -1,10 +1,5 @@
-# Linux-kernel-modules
+# Auto shutdown module
 
 Final year project 
 
-The Project intends to implement 4 additional kernel modules in the system to bring 4 new features to the Linux OperatingSystem.
-
-1.Pausing Feature
-2.Programs auto shutdown feature
-3.Limiting background processes
-4.Handling slow running/Not responding processes
+Killing processes that are greedy and working on background for long.
