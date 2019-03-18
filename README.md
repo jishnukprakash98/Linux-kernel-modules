@@ -1,7 +1,5 @@
 # Linux-kernel-modules
 
-Final year project 
-
 The Project intends to implement 4 additional kernel modules in the system to bring 4 new features to the Linux OperatingSystem.
 
 1.Pausing Feature
