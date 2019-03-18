@@ -22,7 +22,6 @@
  int Check();
 
 
-
 //The main function begins here
  int main()
  {
@@ -31,12 +30,12 @@
 	int choice;
 	
    do
-    
+   
    {
 
    printf("\n\n........................................ENTER YOUR DESIRED CHOICE...........................................\n\n");
    
-   printf("\t1.List of active processes with in the system\n\t2.Pause a process\n\t3.Resume a paused process\n\t4.List of paused processes\n");
+   printf("\t1.List of active processes with in the system\n\t2.Pause a process\n\t3.Resume a paused process\n\t4.List of paused processes\n\t5.Exit\n");
    printf("\n Enter your choice : ");
    scanf("%d",&choice);
 
@@ -44,17 +43,24 @@
    {
    	case 1 : AllProcess();
    		 break;
+   		 
    	case 2 : Paused();
    		 break;
+   		 
    	case 3 : Resumed();
    		 break;
+   		 
    	case 4 : PausedProcesses();
    		 break;
+   		 
+   	case 5 : printf("\nThe program have been terminated, Thankyou.... \n\n");
+   		 exit(0);
+   		 
    	default: printf("\n....Invalid Choice.....\n");
    		 break;    
    }
 
-        printf("\n\nDo you want to continue (y/n) ? :");
+        printf("\n\nAccess main menu (y/n) ? :");
         scanf(" %c",&a);   
 
    }while(a=='y');
@@ -210,7 +216,8 @@
    
    	do
 	{
-		flag=0;
+		repeat : 
+		
 		if(head==NULL)
 	        {
 		   	printf("\nThere are no processes that can be resumed\n");
@@ -220,7 +227,7 @@
 	        else
 	        {
 		
-			repeat : 
+			flag=0;
 			printf("\nEnter the PID of the process to be resumed : ");
 			scanf("%d",&pid);
 			
@@ -240,8 +247,7 @@
 					
 				while(current!=NULL)
 		 		{
-			 		temp=current;
-			 		current=current->link;
+			 	
 			 			
 			 		if((current->data)==pid)
 			 		{
@@ -249,10 +255,13 @@
 						system(resume);
 			 			temp->link=current->link;
 			 			free(current);
-			 			printf("\n\nFlag1 :%d\n\n",flag);
 			 			flag=1;
-			 			printf("\n\nFlag2 :%d\n\n",flag);
 			 			break;
+			 		}
+			 		else
+			 		{
+			 			temp=current;
+					 	current=current->link;	
 			 		}
 			 				
 			 	}
@@ -263,7 +272,6 @@
 				{
 					printf("\nInvalid Input: Entered PID corresponds to a nonexistant process\n");	
 					goto repeat;
-					break;
 				}
 				else
 				{	
@@ -279,5 +287,7 @@
  
  
  }
+
+
 
 
