@@ -93,10 +93,10 @@
 		
 		printf("\nEnter the PID : ");
 		scanf("%d",&pid);
-		
-		temp=(struct node*)malloc(sizeof(struct node));
+
 		flag=Check(pid);//function call to check whether the process is already paused
-		
+				
+		temp=(struct node*)malloc(sizeof(struct node));
 		if(flag==0)
 		{
 			temp->data=pid;
