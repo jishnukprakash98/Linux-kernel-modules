@@ -31,7 +31,7 @@
 	int choice;
 	
    do
-   
+    
    {
 
    printf("\n\n........................................ENTER YOUR DESIRED CHOICE...........................................\n\n");
@@ -205,12 +205,12 @@
    char resume[20];
    char a;
    int pid;
-   int flag=0;
+   int flag;
    
    
    	do
 	{
-		
+		flag=0;
 		if(head==NULL)
 	        {
 		   	printf("\nThere are no processes that can be resumed\n");
@@ -220,7 +220,7 @@
 	        else
 	        {
 		
-			//repeat : 
+			repeat : 
 			printf("\nEnter the PID of the process to be resumed : ");
 			scanf("%d",&pid);
 			
@@ -249,7 +249,9 @@
 						system(resume);
 			 			temp->link=current->link;
 			 			free(current);
+			 			printf("\n\nFlag1 :%d\n\n",flag);
 			 			flag=1;
+			 			printf("\n\nFlag2 :%d\n\n",flag);
 			 			break;
 			 		}
 			 				
@@ -260,7 +262,7 @@
 				if(flag==0)
 				{
 					printf("\nInvalid Input: Entered PID corresponds to a nonexistant process\n");	
-					//goto repeat;
+					goto repeat;
 					break;
 				}
 				else
