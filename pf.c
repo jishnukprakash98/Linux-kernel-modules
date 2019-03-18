@@ -14,7 +14,7 @@ void parranget();
  char pause[20]; 
  char resume[20];
  char a;
- char temp;
+ int temp;
  int p[20];
  int r[20];
  int i=-1;//stores the no of paused processes
@@ -51,32 +51,10 @@ int choice;
    		 break;
    	default: printf("\n....Invalid Choice.....\n");
    		 break;    
-        
+   }
+           
         printf("Do you want to continue (y/n) ? :");
         scanf(" %c",&a);   
-   }
-/*	system("ps all");  
-	     
-       
-	printf("\n\nDo you want to resume the process(y/n) : ");
-	  scanf(" %c",&a);
-	
-	if(a=='y')
-	{       
-        sprintf(resume,"kill -CONT %d",p[i]);
-        system(resume);
-        printf("\n\n***********THE PROCESS : %d , HAS BEEN RESUMED***********\n\n",p[i]); 
-        }
-        else
-           	exit(0); 
-        
-        printf("\n\nDo you want to continue(y/n) : ");
-          scanf(" %c",&a); 
-  
-  }
-  while(a=='y');    
-        	
-	return 0;*/
 
    }while(a=='y');
 }
@@ -121,7 +99,7 @@ int flag;
  if(i==0)
 	{
 	  	printf("\nAs of yet no process have been paused that can be resumed\n");
-	  	return 0;
+	  	exit(0);
         }
 	  
 	  
@@ -134,7 +112,7 @@ int flag;
 	  
 	  printf("\n\tEnter PID of process No.%d : ",j+1);
 	  scanf("%d",&temp);//&r[j];
-	  flag=check();
+	  flag=checkt();
 	  
 	
 	  for(k=0;k<i;k++)
@@ -189,7 +167,7 @@ int checkt()
        
   if(flag==1)
   {
-  	parrange();
+  	parranget();
   	return flag;  
   }
   else
