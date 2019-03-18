@@ -1,4 +1,6 @@
-/* Akhileswar */
+/* Akhileswar*/
+
+// To run provide $$ as argument
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,16 +8,15 @@
 #include <unistd.h>
 
 
-#define SIZE 1
-
-int main(){
+int main(int argc, char *argv[])
+{
 	
 	FILE *file = NULL;
 	char path_buffer[15];
-	int pid = 2000;
+	int pid = 2800;
 	char line[10];
 	
-	//char *name = (char *) malloc(SIZE);
+	char *name;
 	char state;
 	int count = 0;
 	int pgrp = 0;
@@ -23,9 +24,13 @@ int main(){
 	int session_id = 0;
 	//int call_pid = getpid();
 	//int call_sid = getsid(call_pid);
-
+	if(argc < 2){
+		printf("Supply argument\n");
+		return 0;	
+	}
+	printf("current shell PID:%s\n",argv[1]);
 	
-	while(pid < 2100){
+	while(pid < 3200){
 		sprintf(path_buffer,"/proc/%d/stat",pid);
 		
 		file = fopen(path_buffer,"r");
@@ -39,7 +44,9 @@ int main(){
 
 				//to get the process name
 				if(line[0] == '('){
-
+					int len = strlen(line);
+					name = (char *)malloc(len * sizeof(char));
+					strncpy(name,line,len);
 				}
 				if(count == 5){
 					pgrp = atoi(line);
@@ -67,15 +74,14 @@ int main(){
 				*/		
 			}
 
-			if(session_id == 1365 && state != 'T' && pgrp != tpgid){
-					printf("background process\n");
+			if(session_id == atoi(argv[1]) && state != 'T' && pgrp != tpgid){
+					printf("background process BELOW\n");
 				}
-			printf("pid:%d state:%c sessiionID:%d pgrp:%d tpgid:%d\n",pid,state,session_id,pgrp,tpgid);
+			printf("pid:%d %s state:%c sessionID:%d pgrp:%d tpgid:%d\n",pid,name,state,session_id,pgrp,tpgid);
 		}
 		pid++;
 	}
 	//printf("pgid : %d",getpgid(4));
 }
-
 
 
