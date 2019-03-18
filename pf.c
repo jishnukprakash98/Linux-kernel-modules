@@ -3,6 +3,14 @@
 #include <string.h>
 
 
+#define RED     "\x1b[31m"
+#define GREEN   "\x1b[32m"
+#define YELLOW  "\x1b[33m"
+#define BLUE    "\x1b[34m"
+#define MAGENTA "\x1b[35m"
+#define CYAN    "\x1b[36m"
+#define RESET   "\x1b[0m"
+
 
 //The structure definition for the linked list
  struct node
@@ -33,7 +41,7 @@
    
    {
 
-   printf("\n\n........................................ENTER YOUR DESIRED CHOICE...........................................\n\n");
+   printf(RED"\n\n\tENTER YOUR DESIRED CHOICE\n\n"RESET);
    
    printf("\t1.List of active processes with in the system\n\t2.Pause a process\n\t3.Resume a paused process\n\t4.List of paused processes\n\t5.Exit\n");
    printf("\n Enter your choice : ");
@@ -53,14 +61,14 @@
    	case 4 : PausedProcesses();
    		 break;
    		 
-   	case 5 : printf("\nThe program have been terminated, Thankyou.... \n\n");
+   	case 5 : printf(RED"\nThe program have been terminated, Thankyou.... \n\n"RESET);
    		 exit(0);
    		 
    	default: printf("\n....Invalid Choice.....\n");
    		 break;    
    }
 
-        printf("\n\nAccess main menu (y/n) ? :");
+        printf(YELLOW"\n\nAccess main menu (y/n) ? :"RESET);
         scanf(" %c",&a);   
 
    }while(a=='y');
@@ -73,7 +81,7 @@
 
  int AllProcess()
  {
-	printf("\n\n====================================THE LIST OF ALL PROCESSES IN THE SYSTEM====================================\n\n");
+	printf(BLUE"\n\n\t\tTHE LIST OF ALL PROCESSES IN THE SYSTEM\n\n"RESET);
 	system("ps all");     
 
  }
@@ -91,7 +99,7 @@
 	char a;
 	char pause[20];
 	
-	printf("\n\n.....................Enter the PIDs of the processes to be PAUSED........................\n\n");
+	printf(GREEN"\n\n\tEnter the PIDs of the processes to be PAUSED\n\n"RESET);
 	do
 	{
 	
@@ -125,7 +133,7 @@
 		}
 		else
 		{
-			printf("\nInvalid Input: Entered PID corresponds to a Paused process\n");
+			printf(RED"\nInvalid Input: Entered PID corresponds to a Paused process\n"RESET);
 			goto repeat;
 		}	
 	}while(a=='y');  
@@ -182,17 +190,19 @@
    
  	if(head==NULL)
  	{
- 		printf("\n\nNo processes have been paused as of now\n");
+ 		printf(RED"\n\nNo processes have been paused as of now\n"RESET);
  	}
  	
  	else
  	{
  		temp=head;
  	
- 	
+ 		printf(RED"\n\tLIST OF PAUSED PROCESSES\t\n"RESET);
 	 	while(temp!=NULL)
 	 	{
+	 		printf(CYAN);
 	 		printf("\nPROCESS #%d : %d",i,temp->data);
+	 		printf(RESET);
 	 		temp=temp->link;
 	 		i++;
 	 	}
@@ -213,14 +223,14 @@
    int pid;
    int flag;
    
-   
+   	
    	do
 	{
 		repeat : 
 		
 		if(head==NULL)
 	        {
-		   	printf("\nThere are no processes that can be resumed\n");
+		   	printf(RED"\nThere are no processes that can be resumed\n"RESET);
 		   	return 0;
 	        }
 	        
@@ -228,7 +238,7 @@
 	        {
 		
 			flag=0;
-			printf("\nEnter the PID of the process to be resumed : ");
+			printf(GREEN"\nEnter the PID of the process to be resumed : "RESET);
 			scanf("%d",&pid);
 			
 			if(head->data==pid)
@@ -270,12 +280,12 @@
 		 	
 				if(flag==0)
 				{
-					printf("\nInvalid Input: Entered PID corresponds to a nonexistant process\n");	
+					printf(RED"\nInvalid Input: Entered PID corresponds to a nonexistant process\n"RESET);	
 					goto repeat;
 				}
 				else
 				{	
-					printf("\nDo you have another process to resume(y/n) : ");
+					printf(YELLOW"\nDo you have another process to resume(y/n) : "RESET);
 					scanf(" %c",&a);
 				}	
 		        }
@@ -287,7 +297,6 @@
  
  
  }
-
 
 
 
