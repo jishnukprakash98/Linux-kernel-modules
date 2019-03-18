@@ -4,7 +4,7 @@
 
 
 
-
+//The structure definition for the linked list
  struct node
  {
 	int data;
@@ -14,32 +14,27 @@
 
 
 
-
+//List of functions used with in the program
  int AllProcess();
- int PausedProcess();
+ int PausedProcesses();
  int Paused();
  int Resumed();
  int Check();
 
 
 
-
+//The main function begins here
  int main()
  {
 
-	
-	char pause[20]; 
-	char resume[20];
 	char a;
 	int choice;
-	int pid;
-	
 	
    do
    
    {
 
-   printf("\n\n.....................ENTER YOUR DESIRED CHOICE.......................\n\n");
+   printf("\n\n........................................ENTER YOUR DESIRED CHOICE...........................................\n\n");
    
    printf("\t1.List of active processes with in the system\n\t2.Pause a process\n\t3.Resume a paused process\n\t4.List of paused processes\n");
    printf("\n Enter your choice : ");
@@ -49,11 +44,11 @@
    {
    	case 1 : AllProcess();
    		 break;
-   	case 2 : Paused(pause);
+   	case 2 : Paused();
    		 break;
-   	case 3 : Resumed(resume);
+   	case 3 : Resumed();
    		 break;
-   	case 4 : Check();
+   	case 4 : PausedProcesses();
    		 break;
    	default: printf("\n....Invalid Choice.....\n");
    		 break;    
@@ -70,10 +65,9 @@
 
 
 
-
  int AllProcess()
  {
-	printf("\n\n======================THE LIST OF ALL PROCESSES IN THE SYSTEM====================\n\n");
+	printf("\n\n====================================THE LIST OF ALL PROCESSES IN THE SYSTEM====================================\n\n");
 	system("ps all");     
 
  }
@@ -81,23 +75,27 @@
 
 
 
- int Paused(char pause[20])
+//This is the function to pause the ongoing processes withn the system, the paused processes are linearly added to a growing singly linked list.
+ int Paused()
  {
   
 	int pid;
 	int i=0;
 	int flag;
 	char a;
-	printf("\n\n..................Enter the PIDs of the processes to be PAUSED........................\n\n");
+	char pause[20];
+	
+	printf("\n\n.....................Enter the PIDs of the processes to be PAUSED........................\n\n");
 	do
 	{
-		temp=(struct node*)malloc(sizeof(struct node));
-		
+	
 		repeat : 
+		
 		printf("\nEnter the PID : ");
 		scanf("%d",&pid);
 		
-		flag=Check(pid);//need function call to check whether the process is already paused
+		temp=(struct node*)malloc(sizeof(struct node));
+		flag=Check(pid);//function call to check whether the process is already paused
 		
 		if(flag==0)
 		{
@@ -121,7 +119,7 @@
 		}
 		else
 		{
-			printf("\nInvalid Input: Entered PID corresponds to an already Paused process\n");
+			printf("\nInvalid Input: Entered PID corresponds to a Paused process\n");
 			goto repeat;
 		}	
 	}while(a=='y');  
@@ -131,6 +129,44 @@
  }
  
 
+
+
+ 
+ int Check(int pid)
+ {
+   
+ 	if(head==NULL)
+ 	{
+ 		return 0;
+ 	}
+ 	
+ 	else if(head!=NULL)
+ 	{
+ 		temp=head;
+ 	
+ 	
+	 	while(temp!=NULL)
+	 	{
+	 		if((temp->data)==pid)
+	 		{
+	 			return 1;
+	 		}
+	 		else
+	 		{
+	 			temp=temp->link;
+	 		}
+	 	}
+	 }
+	else
+	{
+	 	
+ 		return 0;	
+ 	}
+ }
+ 
+ 
+ 
+ 
 
  
  int PausedProcesses()
@@ -146,56 +182,27 @@
  	else
  	{
  		temp=head;
- 	}
  	
- 	while(temp!=NULL)
- 	{
- 		printf("\nPROCESS #%d : %d",i,temp->data);
- 		temp=temp->link;
- 		i++;
+ 	
+	 	while(temp!=NULL)
+	 	{
+	 		printf("\nPROCESS #%d : %d",i,temp->data);
+	 		temp=temp->link;
+	 		i++;
+	 	}
  	}
  	
   printf("\n\n");
   
  }
  
+ 	
  
  
  
- int Check(int pid)
+ int Resumed()
  {
-   
- 	if(head==NULL)
- 	{
- 		return 0;
- 	}
- 	
- 	else
- 	{
- 		temp=head;
- 	}
- 	
- 	while(temp!=NULL)
- 	{
- 		if((temp->data)==pid)
- 		{
- 			return 1;
- 		}
- 		else
- 		{
- 			temp=temp->link;
- 		}
- 	}
- 	
- 	return 0;	
- 		
- }
- 	
- 
- 
- 
- int Resumed(char resume[20])
- {
+   char resume[20];
    char a;
    int pid;
    int flag=0;
@@ -213,39 +220,55 @@
 	        else
 	        {
 		
-			repeat : 
+			//repeat : 
 			printf("\nEnter the PID of the process to be resumed : ");
 			scanf("%d",&pid);
-						
-			temp=current=head;
-				
-			while(current!=NULL)
-	 		{
-		 		temp=current;
-		 		current=current->link;
-		 			
-		 		if(current->data==pid)
-		 		{
-		 			sprintf(resume,"kill -CONT %d",current->data);  
-					system(resume);
-		 			temp->link=current->link;
-		 			free(current);
-		 			flag=1;
-		 			break;
-		 		}
-		 				
-		 	}
-	 	
-			if(flag==0)
+			
+			if(head->data==pid)
 			{
-				printf("\nInvalid Input: Entered PID corresponds to a nonexistant process\n");	
-				goto repeat;
+				sprintf(resume,"kill -CONT %d",head->data);  
+				system(resume);
+				current=head;
+				head=head->link;
+				free(current);
 			}
+			
 			else
-			{	
-				printf("\nDo you have another process to resume(y/n) : ");
-				scanf(" %c",&a);
-			}	
+			{
+						
+				temp=current=head;
+					
+				while(current!=NULL)
+		 		{
+			 		temp=current;
+			 		current=current->link;
+			 			
+			 		if((current->data)==pid)
+			 		{
+			 			sprintf(resume,"kill -CONT %d",current->data);  
+						system(resume);
+			 			temp->link=current->link;
+			 			free(current);
+			 			flag=1;
+			 			break;
+			 		}
+			 				
+			 	}
+			 	
+			 	
+		 	
+				if(flag==0)
+				{
+					printf("\nInvalid Input: Entered PID corresponds to a nonexistant process\n");	
+					//goto repeat;
+					break;
+				}
+				else
+				{	
+					printf("\nDo you have another process to resume(y/n) : ");
+					scanf(" %c",&a);
+				}	
+		        }
 		}
 	}while(a=='y');  
 
