@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 				}
 				*/		
 			}
-
+			//Distinguishing background processes
 			if(session_id == atoi(argv[1]) && state != 'T' && pgrp != tpgid){
 					printf("background process BELOW\n");
 				}
