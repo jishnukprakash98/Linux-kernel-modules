@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 	
 	FILE *file = NULL;
 	char path_buffer[15];
-	int pid = 2800;
+	int pid = 2;
 	char line[10];
 	
 	char *name;
@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 	}
 	printf("current shell PID:%s\n",argv[1]);
 	
-	while(pid < 3200){
+	while(pid < 10000){
 		sprintf(path_buffer,"/proc/%d/stat",pid);
 		
 		file = fopen(path_buffer,"r");
