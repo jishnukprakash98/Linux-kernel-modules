@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
 
 
 int main(int argc, char *argv[])
@@ -76,8 +77,10 @@ int main(int argc, char *argv[])
 			//Distinguishing background processes
 			if(session_id == atoi(argv[1]) && state != 'T' && pgrp != tpgid){
 					printf("background process BELOW\n");
-				}
-			printf("pid:%d %s state:%c sessionID:%d pgrp:%d tpgid:%d\n",pid,name,state,session_id,pgrp,tpgid);
+					printf("pid:%d %s state:%c sessionID:%d pgrp:%d tpgid:%d\n",pid,name,state,session_id,pgrp,tpgid);
+					//kill(pid, SIGQUIT);	
+			}
+			
 		}
 		pid++;
 	}
