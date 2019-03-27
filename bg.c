@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 {
 	
 	FILE *file = NULL;
-	char path_buffer[15];
+	char path_buffer[25];
 	int pid = 2;
 	char line[10];
 	
