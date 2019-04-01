@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <signal.h>
+#include <sys/types.h>
 
 #define RED     "\x1b[31m"
 #define GREEN   "\x1b[32m"
@@ -43,7 +44,7 @@
 
    printf(RED"\n\n\tENTER YOUR DESIRED CHOICE\n\n"RESET);
    
-   printf("\t1.List of active processes with in the system\n\t2.Pause a process\n\t3.Resume a paused process\n\t4.List of paused processes\n\t5.Exit\n");
+   printf("\t1.List of active processes within the system\n\t2.Pause a process\n\t3.Resume a paused process\n\t4.List of paused processes\n\t5.Exit\n");
    printf("\n Enter your choice : ");
    scanf("%d",&choice);
 
@@ -115,8 +116,12 @@
 		{
 			temp->data=pid;
 			temp->link=NULL;
+			/*
 			sprintf(pause,"kill -STOP %d",temp->data);  
 			system(pause);
+			*/
+			//MODIFICATION
+			kill(pid,SIGSTOP);
 			if(head==NULL)
 			{
 				head=temp;
@@ -187,6 +192,8 @@
  {
  
    int i=1;
+   char paused[20];
+   //char trial[500];
    
  	if(head==NULL)
  	{
@@ -200,9 +207,19 @@
  		printf(RED"\n\tLIST OF PAUSED PROCESSES\t\n"RESET);
 	 	while(temp!=NULL)
 	 	{
-	 		printf(CYAN);
-	 		printf("\nPROCESS #%d : %d",i,temp->data);
-	 		printf(RESET);
+	 		//printf(CYAN);//ps -p 2544 -o comm=
+	 		//Modification
+			sprintf(paused,"ps -p %d -o comm=",temp->data);
+			/*trial=*/
+			//Modification ends
+			printf(YELLOW"\n------------------\n"RESET);
+			printf(MAGENTA"#%d PROCESS NAME"RESET,i);
+			printf("\n");
+			system(paused);
+	 		printf(CYAN"PROCESS ID\n"RESET);
+	 		printf("%d",temp->data);//printf("\nPROCESS #%d: %d------->",i,temp->data); 
+	 		printf(YELLOW"\n------------------\n"RESET);
+	 		//printf(RESET);
 	 		temp=temp->link;
 	 		i++;
 	 	}
@@ -243,8 +260,12 @@
 			
 			if(head->data==pid)
 			{
+				/*
 				sprintf(resume,"kill -CONT %d",head->data);  
 				system(resume);
+				*/
+				//MODIFICATION
+				kill(pid,SIGCONT);
 				current=head;
 				head=head->link;
 				free(current);
@@ -261,8 +282,9 @@
 			 			
 			 		if((current->data)==pid)
 			 		{
-			 			sprintf(resume,"kill -CONT %d",current->data);  
-						system(resume);
+			 			/*sprintf(resume,"kill -CONT %d",current->data);  
+						system(resume);*/
+						kill(pid,SIGCONT);
 			 			temp->link=current->link;
 			 			free(current);
 			 			flag=1;
@@ -297,6 +319,3 @@
  
  
  }
-
-
-
