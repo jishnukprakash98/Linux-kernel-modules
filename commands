@@ -1,0 +1,1 @@
+wmctrl -l -p : list all windows with pid.
