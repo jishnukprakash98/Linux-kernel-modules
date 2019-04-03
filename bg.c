@@ -7,7 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
-
+#include <ctype.h>
 
 int main(int argc, char *argv[])
 {
@@ -15,8 +15,8 @@ int main(int argc, char *argv[])
 	FILE *file = NULL;
 	char path_buffer[25];
 	int pid = 2;
-	char line[10];
-	
+	char line[100];
+	char *token;
 	char *name;
 	char state;
 	int count = 0;
@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 	}
 	printf("current shell PID:%s\n",argv[1]);
 	
-	while(pid < 10000){
+	while(pid < 32768){
 		sprintf(path_buffer,"/proc/%d/stat",pid);
 		
 		file = fopen(path_buffer,"r");
@@ -39,32 +39,38 @@ int main(int argc, char *argv[])
 		if(file != NULL){
 			  
 			count = 0;
-			while(fscanf(file,"%s",line)){
-				
+			
+				fgets(line,100,file);
+				token = strtok(line," ");
+				while(token != NULL){
 				count++;
-
+				
 				//to get the process name
-				if(line[0] == '('){
-					int len = strlen(line);
-					name = (char *)malloc(len * sizeof(char));
-					strncpy(name,line,len);
+				if(count == 2){
+					int name_len = strlen(token);
+					name = (char *)malloc(name_len * sizeof(char));
+					name = token;
+					//strncpy(name,token,name_len);
+					//to get the process state
+				
+					
+				}
+				if(token[0] == 'S' || token[0] == 'R' || token[0] == 'T' || token[0] == 'I'){
+						state = token[0];
+					
 				}
 				if(count == 5){
-					pgrp = atoi(line);
+					pgrp = atoi(token);
 				}
 				if(count == 6){
-					session_id = atoi(line);
+					session_id = atoi(token);
 				}
 				if(count == 8){
-					tpgid = atoi(line);
+					tpgid = atoi(token);
 					break;
 				}
 
-				//to get the process state
-				if(line[0] == 'S' || line[0] == 'R' || line[0] == 'T' || line[0] == 'I'){
-					state = line[0];
-					//break;
-				}
+				
 
 				//To get the field as a seperate string
 				/*
@@ -72,8 +78,10 @@ int main(int argc, char *argv[])
 					field  = (char *) realloc(field,SIZE + i);
 					*(field + i) = line[i];
 				}
-				*/		
-			}
+				*/	
+				token = strtok(NULL," ");	
+			}//token!=NULL
+			printf("pid:%d %s state:%c sessionID:%d pgrp:%d tpgid:%d\n",pid,name,state,session_id,pgrp,tpgid);
 			//Distinguishing background processes
 			if(session_id == atoi(argv[1]) && state != 'T' && pgrp != tpgid){
 					printf("background process BELOW\n");
@@ -82,9 +90,9 @@ int main(int argc, char *argv[])
 			}
 			
 		}
+			
+		
 		pid++;
 	}
 	//printf("pgid : %d",getpgid(4));
 }
-
-
