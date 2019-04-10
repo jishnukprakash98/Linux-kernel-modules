@@ -1,12 +1,27 @@
 /* Akhileswar*/
 
-// To run provide $$ as argument
+
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
+
+#define PROC_LIMIT 32768
+
+static char* get_proc_name(char *str, char *name)
+{
+		int i = 0;
+
+		name = strchr(str,'(') + 1;
+		for(i = 0; name[i] != ')'; i++);
+		char *n = (char *)malloc(i * sizeof(char));
+		
+		strncpy(n,name,i);
+
+	return n;
+}
 
 
 int main(int argc, char *argv[])
@@ -23,15 +38,8 @@ int main(int argc, char *argv[])
 	int pgrp = 0;
 	int tpgid = 0;
 	int session_id = 0;
-	//int call_pid = getpid();
-	//int call_sid = getsid(call_pid);
-	if(argc < 2){
-		printf("Supply argument\n");
-		return 0;	
-	}
-	printf("current shell PID:%s\n",argv[1]);
 	
-	while(pid < 32768){
+	while(pid < PROC_LIMIT){
 		sprintf(path_buffer,"/proc/%d/stat",pid);
 		
 		file = fopen(path_buffer,"r");
@@ -39,53 +47,37 @@ int main(int argc, char *argv[])
 		if(file != NULL){
 			  
 			count = 0;
+				
+			fgets(line,100,file);
+				
+			name = get_proc_name(line,name);
+
+			token = strtok(line," ");
+			while(token != NULL){
+			count++;
 			
-				fgets(line,100,file);
-				token = strtok(line," ");
-				while(token != NULL){
-				count++;
-				
-				//to get the process name
-				if(count == 2){
-					int name_len = strlen(token);
-					name = (char *)malloc(name_len * sizeof(char));
-					name = token;
-					//strncpy(name,token,name_len);
-					//to get the process state
-				
-					
-				}
 				if(token[0] == 'S' || token[0] == 'R' || token[0] == 'T' || token[0] == 'I'){
 						state = token[0];
-					
 				}
-				if(count == 5){
+				else if(count == 5){
 					pgrp = atoi(token);
 				}
-				if(count == 6){
+				else if(count == 6){
 					session_id = atoi(token);
 				}
-				if(count == 8){
+				else if(count == 8){
 					tpgid = atoi(token);
 					break;
 				}
 
-				
-
-				//To get the field as a seperate string
-				/*
-				for(int i = 0; line[i] != '\t'; i++){
-					field  = (char *) realloc(field,SIZE + i);
-					*(field + i) = line[i];
-				}
-				*/	
 				token = strtok(NULL," ");	
-			}//token!=NULL
-			printf("pid:%d %s state:%c sessionID:%d pgrp:%d tpgid:%d\n",pid,name,state,session_id,pgrp,tpgid);
+			}
+			
 			//Distinguishing background processes
-			if(session_id == atoi(argv[1]) && state != 'T' && pgrp != tpgid){
+			if(state != 'T' && pgrp != tpgid){
 					printf("background process BELOW\n");
-					printf("pid:%d %s state:%c sessionID:%d pgrp:%d tpgid:%d\n",pid,name,state,session_id,pgrp,tpgid);
+					//printf("pid:%d %s state:%c sessionID:%d pgrp:%d tpgid:%d\n",pid,name,state,session_id,pgrp,tpgid);
+					printf("pid:%d %s \n",pid,name);
 					//kill(pid, SIGQUIT);	
 			}
 			
@@ -94,5 +86,5 @@ int main(int argc, char *argv[])
 		
 		pid++;
 	}
-	//printf("pgid : %d",getpgid(4));
+	//printf("UID : %d",getuid());
 }
