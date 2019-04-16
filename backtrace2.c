@@ -3,8 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-void
-myfunc3(void)
+void myfunc3(void)
 {
     int j, nptrs;
 #define SIZE 100
@@ -29,14 +28,12 @@ myfunc3(void)
    free(strings);
 }
 
-static void   /* "static" means don't export the symbol... */
-myfunc2(void)
+static void myfunc2(void)   /* "static" means don't export the symbol... */
 {
     myfunc3();
 }
 
-void
-myfunc(int ncalls)
+void myfunc(int ncalls)
 {
     if (ncalls > 1)
         myfunc(ncalls - 1);
@@ -44,8 +41,7 @@ myfunc(int ncalls)
         myfunc2();
 }
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     if (argc != 2) {
         fprintf(stderr, "%s num-calls\n", argv[0]);
