@@ -1,1 +1,2 @@
 wmctrl -l -p : list all windows with pid.
+sudo apt-get install libxmu-dev      //for X11/Xmu/Winutil.h: no such file or sirectory error
