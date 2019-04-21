@@ -1,18 +1,9 @@
-/* llist.c
- * Generic Linked List implementation
- */
 
 #include <stdlib.h>
 #include <stdio.h>
 #include "llist.h"
 
-node create_node()
-{
-	node temp = (node)malloc(sizeof(node));
-	temp->next = NULL;
-	return temp;
 
-}
 node *list_create(int new_data)
 {
     node new_node;
