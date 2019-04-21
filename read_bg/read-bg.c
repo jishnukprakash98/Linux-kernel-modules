@@ -11,7 +11,7 @@
 
 #include "llist.h"
 
-#define PROC_LIMIT 32768
+//#define PROC_LIMIT 32768
 
 static char* get_proc_name(char *str)
 {
@@ -25,15 +25,6 @@ static char* get_proc_name(char *str)
 		n[i] = '\0';
 
 	return n;
-}
-
-static void print_pid(void *num)
-{
-    int *pnum = (int *)num;
-    if (num == NULL) 
-        return;
-    
-    printf("%d", *pnum);
 }
 
 
@@ -56,7 +47,7 @@ int main(int argc, char *argv[])
 	DIR           *dir;
 
 	node *my_list = list_create(0);
-	//node head = NULL;
+	
 	printf("Background process BELOW:\n");
 
 	dir = opendir("/proc/");
@@ -69,43 +60,40 @@ int main(int argc, char *argv[])
 		if (dir_entry->d_name[0] <= '9' && dir_entry->d_name[0] >= '0') {
 			pid = atoi(dir_entry->d_name);
 			
-			//CODE
-
 			sprintf(path_buffer,"/proc/%d/stat",pid);
 		
-		file = fopen(path_buffer,"r");
-		//if file exists
-		if(file != NULL){
+			file = fopen(path_buffer,"r");
+		
+			if(file != NULL){
 			  
-			count = 0;
+				count = 0;
 				
-			fgets(line,100,file);
+				fgets(line,100,file);
+				name = get_proc_name(line);
 				
-			name = get_proc_name(line);
-
-			token = strtok(line," ");
-			while(token != NULL){
-			count++;
+				token = strtok(line," ");
+				while(token != NULL){
+					count++;
 			
-				if(token[0] == 'S' || token[0] == 'R' || token[0] == 'T' || token[0] == 'I') {
+					if(token[0] == 'S' || token[0] == 'R' || token[0] == 'T' || token[0] == 'I') {
 						state = token[0];
-				}
-				else if(count == 5){
-					pgrp = atoi(token);
-				}
-				else if(count == 6){
-					session_id = atoi(token);
-				}
-				else if(count == 8){
-					tpgid = atoi(token);
-					break;
-				}
+					}
+					else if(count == 5){
+						pgrp = atoi(token);
+					}
+					else if(count == 6){
+						session_id = atoi(token);
+					}
+					else if(count == 8){
+						tpgid = atoi(token);
+						break;
+					}
 
-				token = strtok(NULL," ");	
-			}
+					token = strtok(NULL," ");	
+				}
 			
-			//Distinguishing background processes
-			if(session_id == 17041 && state != 'T' && pgrp != tpgid) {
+				//Distinguishing background processes
+				if(session_id == 17041 && state != 'T' && pgrp != tpgid) {
 					
 					//printf("pid:%d %s state:%c sessionID:%d pgrp:%d tpgid:%d\n",pid,name,state,session_id,pgrp,tpgid);
 					list_push(my_list,pid);
@@ -117,7 +105,7 @@ int main(int argc, char *argv[])
 		}
 
 
-		}
+	}
 	}
 		list_print(my_list);
 	
