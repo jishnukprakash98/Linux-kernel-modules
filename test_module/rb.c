@@ -12,7 +12,14 @@
 #include <linux/spinlock.h>
 #include <asm/uaccess.h> 
 #include <linux/slab.h>
+#include <linux/moduleparam.h>
 
+
+static int input = 10;
+module_param(input,int,0660);
+
+/*Testing if parametrozed functions cause OS hang*/
+void print(int a){ printk(KERN_INFO "test:%d",a);}
 
 MODULE_LICENSE("GPL");
 //MODULE_AUTHOR("Appu");
@@ -20,7 +27,7 @@ MODULE_LICENSE("GPL");
 static int __init start_program(void)
 {
         //FILE *file = NULL;
-	
+	print(333);
 	static char path_buffer[25];
 	/*
 	static int pid = 2;
@@ -37,7 +44,7 @@ static int __init start_program(void)
 	
 	
 	
-    	printk(KERN_INFO "rb: COME ON...\n");
+    	printk(KERN_INFO "rb: COME ON...input = %d\n",input);
     	
 	struct task_struct	*task;
 	size_t			bg_proc_count = 0;
@@ -106,6 +113,9 @@ static int __init start_program(void)
 			//Background process
 			printk(KERN_INFO " Background %5d  %16s",task->pid,task->comm);
 			pids[bg_proc_count++] = task->pid;
+			
+			if(task->pid == input)
+				force_sig(SIGSTOP,task);
 		} 
 	}
 
