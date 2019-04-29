@@ -1,10 +1,12 @@
-/*#include <stdio.h>
+/*
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
 #include <dirent.h>
 #include <ctype.h>
-#include <unistd.h>*/
+#include <unistd.h>
+*/
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -17,26 +19,25 @@
 #include <linux/llist.h>
 #include <linux/spinlock.h>
 #include <linux/spinlock_types.h>
-#include <asm/uaccess.h> 
 #include <linux/slab.h>
 #include <linux/moduleparam.h>
+#include <asm/uaccess.h> 
+#include "cp_proc.h"
 
 MODULE_AUTHOR("AKG");
 MODULE_LICENSE("GPL");
 
-//#define ISALPHA(x) \
-//	( (x >= 'a' && x <= 'z') || (x >= 'A' && x <= 'Z') )
-#define ISWHITESPC(x) \
-	(x == ' ' || x == '\t' || x == '\n')
+static int stop_cp = 0;	/* 0 for don't SIGSTOP cp. 1 for stopping. */
+module_param(stop_cp, int, S_IRUGO); /* Make parameters available. */
 
-rwlock_t list_lock; //The definition of read and write lock, lock before operation, after operation.
+//The definition of read and write lock, lock before operation, after operation
+rwlock_t list_lock; 
 
 struct task_struct *cp_task = NULL;
 
 //static DEFINE_RWLOCK(myrwlock);
 struct node
 {
-
 	int data;
 	//struct node *link;
 	struct list_head p_list ;
@@ -45,7 +46,6 @@ struct node
 
 struct proc
 {
-
 	int processid;
 	char procname[100];
 	char state;
@@ -79,25 +79,31 @@ static int __init start_program(void)
         	printk(KERN_INFO "Testing:%d\n",curr->processid);
     	}*/
 //	write_unlock(&list_lock);
+	
+	printk(KERN_INFO "cp: Option to SIGSTOP cp enabled by default? %s",
+		(stop_cp) ? "YES" : "NO");
+
 	for_each_process(task) 
 	{
-//		p = kmalloc(sizeof(struct proc *), GFP_KERNEL);
 //		p->processid = task->pid;
 //		strcpy(p->procname, task->comm);
 //		p->state = task_state_to_char(task);
 //		p->priority = task->normal_prio;
 //		list_add(&p->a_list,&test_head);
 
-		printk(KERN_INFO "Adding %d (%c%c%x)", task->pid, task->comm[0],
-				task->comm[1], task->comm[2]);
-		
+		printk(KERN_INFO "Adding %d (%s)", task->pid, task->comm);
+
 /* Check if task->comm starts with 'cp ' */
-		if  (task->comm[0] == 'c' && task->comm[1] == 'p') {
-			printk(KERN_INFO "cp found with pid: %d and stopped",
-					task->pid);
-			force_sig(SIGSTOP, task);
+		if (strcmp(task->comm, "cp") == 0) {
+			printk(KERN_INFO "%s found with pid: %d and stopped",
+				task->comm, task->pid);
+/* Stop the cp process only if asked for when loading module. */
+			if (stop_cp) {
+				printk(KERN_INFO "Stopping above process.");
+				force_sig(SIGSTOP, task);
 			/* Store paused cp's task_struct for resuming later.*/
-			cp_task = task;	
+//				cp_task = task;	
+			}
 		}
 	}
 //	write_lock(&list_lock);
@@ -118,7 +124,7 @@ static void __exit stop_program(void)
 	/* If cp was found and paused. */
 	if (cp_task != NULL) {
 		printk(KERN_INFO "Resuming cp pid: %d", cp_task->pid);
-		force_sig(SIGCONT, cp_task);
+		//force_sig(SIGCONT, cp_task);
 	}
 }
 
