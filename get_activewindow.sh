@@ -1,8 +1,15 @@
+  GNU nano 2.9.3                                                       win.sh                                                                 
+
 echo "enter the limit"
 read limit
+start=$SECONDS
+end=$((SECONDS+$limit))
+
+while [ $SECONDS -lt $end ]; do
 for x in $(seq 1 $limit); do sleep 5; wmctrl -lp | grep $(xprop -root | \
     grep _NET_ACTIVE_WINDOW | head -1 | awk '{print $5}' | sed 's/,//' | \
     sed 's/^0x/0x0/'); done >file2
+done
 wmctrl -lp >file1
 
 awk -F' ' 'NR==FNR{c[$3]++;next};c[$3] <= 0' file2 file1 >file3
