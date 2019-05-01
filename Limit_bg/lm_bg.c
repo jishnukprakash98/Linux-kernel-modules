@@ -56,10 +56,7 @@ int thread_fn(void *a)
 	while (!kthread_should_stop()) { //run infinitely
 		for_each_process(task) {
 
-			if(is_kernel_proc(task)) {
-				//printk(KERN_INFO "Kernel Process: %d [%s]",
-				//	task->pid, task->comm);
-			} else {
+			if(!is_kernel_proc(task)) {
 				pgrp = pid_vnr(task_pgrp(task));
 				session_id = pid_vnr(task_session(task));
 				state = task_state_to_char(task);
@@ -71,7 +68,8 @@ int thread_fn(void *a)
 				
 				if(fil == NULL) {
 		       		 	printk(KERN_ALERT "rb: filp_open error!!.\n");
-		       	} else {
+		       		} 
+				else {
 					// Get current segment descriptor
 					fs = get_fs();
 					// Set segment descriptor associated to kernel space
