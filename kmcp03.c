@@ -20,9 +20,9 @@ MODULE_LICENSE("MIT License");
 
 
 static int arr_argc = 0;
-static char proc_any[50];	/* 0 for don't SIGSTOP cp. 1 for stopping. */
+static char *proc_any = "HELL";	/* 0 for don't SIGSTOP cp. 1 for stopping. */
 //module_param(proc_any, char, S_IRUGO); /* Make parameters available. */
-module_param_array(proc_any, char*,&arr_argc , 0);
+module_param_array(proc_any, charp, S_IRUGO);
 
 
 //The definition of read and write lock, lock before operation, after operation
