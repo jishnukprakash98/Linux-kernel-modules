@@ -6,6 +6,8 @@
 #include <linux/string.h>
 #include <linux/timekeeping32.h>
 #include <linux/time.h>
+#include <linux/timekeeping.h>
+
 MODULE_LICENSE("GPL");
 
 struct list 
@@ -25,7 +27,7 @@ void procs_info_print(void)
         //int totproc; 
            
         for_each_process(task_list) {       
-        	pr_info("== name:%s\t\t\tpid:[%d]\t\tstarttime:[%llu],[%llu]\t\tmemory:[%llu]\n", task_list->comm,task_list->pid,task_list->start_time/1000000000,(task_list->utime+task_list->stime)/1000000000 ,task_list->acct_rss_mem1/(1024*1024));
+        	pr_info("== name:%s\tpid:[%d]\t\tstarttime:[%llu],[%llu],[%llu]\tmemory:[%llu]\n", task_list->comm,task_list->pid,task_list->start_time,(task_list->utime+task_list->stime),task_list->se.exec_start,task_list->acct_rss_mem1);
 
         /*strcpy(proc[i].name,task_list->comm);
         proc[i].pid=task_list->pid;
@@ -47,16 +49,26 @@ void procs_info_print(void)
 	};
 	getnstimeofday(struct timespec *ts);  */   
 
+
+	//clockid_t=CLOCK_REALTIME;
+	
+	//struct shed_entity se = task_struct->se;
+	
 	struct timespec ts_start;
 	getnstimeofday(&ts_start);
+	//int seconds=clock_gettime(CLOCK_REALTIME,ts_start);
 	
-	printk(KERN_INFO "== Number of process: %zu\n", process_counter);
-        printk(KERN_INFO "== Time: %lu\n", ts_start);
 	
-	for_each_process(task_list) {
+	printk(KERN_INFO "== Number of process: %zu\n", process_counter);           
+        printk(KERN_INFO "== Time: %lu\n", ts_start.tv_nsec);
+	
+	//printk(KERN_INFO "== Time: %lu\n", se->exec_start);
+	
+	
+	/*for_each_process(task_list) {
 	if((task_list->start_time/1000000000)>ts_sec && task_list->acct_rss_mem1/10000000)
             pr_info("name:%s\t\tpid:[%d]",task_list->comm,task_list->pid);
-	}
+	}*/
 	     
 	//printk(KERN_INFO "== Time: %lu\n", ts_start);
 	//PRINTK_TIME(KERN_INFO "== Time: %lu\n", ts_start);
