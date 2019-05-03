@@ -8,10 +8,6 @@
 #include <linux/signal.h>
 #include <linux/sched/signal.h>
 #include <linux/tty.h>
-#include <linux/llist.h>
-#include <linux/spinlock.h>
-#include <asm/uaccess.h> 
-#include <linux/slab.h>
 #include <linux/kthread.h>
 #include <linux/delay.h> 
 
@@ -41,9 +37,9 @@ static int is_kernel_proc(struct task_struct *task)
 int thread_fn(void *a)
 {
 	static char path_buffer[25];
-	static char	 state;
+	static char state;
 	static char  buf[128];
-	static struct task_struct	*task;
+	static struct task_struct *task;
 	static struct file *fil;
 	static pid_t  pgrp, session_id;
 	static int size, i = 0, j = 0, tpgid = 0;
@@ -53,7 +49,7 @@ int thread_fn(void *a)
 
 	allow_signal(SIGKILL);
 	
-	while (!kthread_should_stop()) { //run infinitely
+	while (!kthread_should_stop()) { 
 		for_each_process(task) {
 
 			if(!is_kernel_proc(task)) {
@@ -63,7 +59,6 @@ int thread_fn(void *a)
 				
 				sprintf(path_buffer,"/proc/%d/stat", task->pid);
 			
-					
 				fil = filp_open(path_buffer, O_RDONLY, 0);
 				
 				if(fil == NULL) {
@@ -125,7 +120,6 @@ int thread_fn(void *a)
 
 static int __init start_program(void)
 {
-	
 	limit_thread = kthread_create(thread_fn, NULL, "limit_thread");
 
 	if(limit_thread) 
@@ -142,7 +136,6 @@ static void __exit stop_program(void)
  		if(ret == 0)
   			printk(KERN_INFO "Thread stopped");
 	}
-
 }
 
 module_init(start_program);
