@@ -1,5 +1,3 @@
-/* Akhileswar, Abhiram*/
-
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/module.h>
@@ -21,7 +19,9 @@ static struct task_struct *limit_thread;
 struct mystruct {
      int data ;
      struct list_head mylist ;
-}*proc_list,*tmp;
+};
+
+struct mystruct *temp;
 
 LIST_HEAD(proc_head) ;
 
@@ -54,7 +54,7 @@ int thread_fn(void *a)
 	static struct task_struct *task;
 	static struct file *fil;
 	static pid_t  pgrp, session_id;
-	static int size, i = 0, j = 0, tpgid = 0, no_of_bg = 0,k=0,count = 0;
+	static int size, i = 0, j = 0, tpgid = 0, no_of_bg = 0,k=0, count = 0;
 	bool in_array = false;
 	static mm_segment_t fs;
 	static int *array;
@@ -66,11 +66,11 @@ int thread_fn(void *a)
 	for(k = 0; k < limit; k++)
 		array[k] = 0;
 
-	
+
 
 	allow_signal(SIGKILL);
 
-	
+
 	while (!kthread_should_stop()) { //run infinitely
 		for_each_process(task) {
 
@@ -83,12 +83,12 @@ int thread_fn(void *a)
 				pgrp = pid_vnr(task_pgrp(task));
 				session_id = pid_vnr(task_session(task));
 				state = task_state_to_char(task);
-				
+
 				sprintf(path_buffer,"/proc/%d/stat", task->pid);
-			
-					
+
+
 				fil = filp_open(path_buffer, O_RDONLY, 0);
-				
+
 				if(fil == NULL) {
 		       		 	printk(KERN_ALERT "rb: filp_open error!!.\n");
 		       	} else {
@@ -103,7 +103,7 @@ int thread_fn(void *a)
 					set_fs(fs);
 					// See what we read from file
 					buf[size] = '\0';
-					
+
 				}
 				if (fil != NULL)
 					filp_close(fil, NULL);
@@ -129,70 +129,47 @@ int thread_fn(void *a)
 					++i;
 				}
 				i = j = 0;
+				in_array = false;
 				/*Filtering background processes and sending QUIT signal*/
 				if(session_id == shell_id && state != 'T' && pgrp != tpgid && task->pid != shell_id) {
+
+
+					temp = kmalloc(sizeof(struct mystruct), GFP_KERNEL);
+					temp->data = task->pid;
+
+					INIT_LIST_HEAD(&temp->mylist);
+
+					//list_add(&temp->mylist,&proc_head);
+
 					
-					
-					tmp = kmalloc(sizeof(struct mystruct), GFP_KERNEL);
-					tmp->data = task->pid;
-
-					INIT_LIST_HEAD(&tmp->mylist);
-
-					
-
-					struct mystruct *temp;
-
 					list_for_each_entry(temp, &proc_head, mylist) {
-			            printk(KERN_INFO "Node %d data = %d\n", count, temp->data);
-			            if(temp->data == task->pid){
-			            	printk(KERN_INFO "DUP\n");
-			            	in_array = true;
-			            }
+			            		
+			            		if(temp->data == task->pid){
+			            			printk(KERN_INFO "DUP\n");
+			            			in_array = true;
+			            		}
 
-			        }
-			        if(!in_array) count++;
-
-			       if(count <= limit)
-			        	list_add(&tmp->mylist,&proc_head);
-			 	
-					
-					/*
-					for( k = 0; k < limit; k++){
-						printk(KERN_INFO "array[%d] = %d",k,array[k]);
-						if(array[k] == task->pid)
-							in_array = true;
-					}
-
-					if(!in_array ){
-						printk(KERN_INFO "Adding pid = %d to array", task->pid);
-						if(no_of_bg < limit)
-							array[no_of_bg++] = task->pid;
-						else
-							no_of_bg++;
-					}
-					*/
-					if(count > limit){
-					
-						printk(KERN_INFO " Background %-6d  %-16s KILLED",task->pid,task->comm);
-						printk(KERN_INFO "count : %d, limit : %d",count, limit);
-						force_sig(SIGTERM, task);
+			        	}
+			        	if(!in_array) {
+						list_add(&temp->mylist,&proc_head);
+						count++;	
 					}
 					
+
 				} 		
 			}
 		}
-		/*struct mystruct *temp;
-
-		int count = 0;
-        printk(KERN_INFO "Read function\n");
+		
+		
+     // printk(KERN_INFO "Node count : %d\n",count);
  
         
         list_for_each_entry(temp, &proc_head, mylist) {
             printk(KERN_INFO "Node %d data = %d\n", count++, temp->data);
         }
  
-        printk(KERN_INFO "Total Nodes = %d\n", count);*/
-		ssleep(3);
+       printk(KERN_INFO "Total Nodes = %d\n", count);
+		ssleep(2);
 	}
 
 	return 0;
@@ -200,19 +177,20 @@ int thread_fn(void *a)
 
 static int __init start_program(void)
 {
-	
+
 	limit_thread = kthread_create(thread_fn, NULL, "limit_thread");
 
 	if(limit_thread) 
 		wake_up_process(limit_thread);
-	
+
 	return 0;
 }
 
 static void __exit stop_program(void)
 {
-	
-		struct mystruct *cursor, *temp;
+
+	struct mystruct *cursor, *temp;
+        /*Deleting the linked list*/
         list_for_each_entry_safe(cursor, temp, &proc_head, mylist) {
             list_del(&cursor->mylist);
             kfree(cursor);
@@ -220,7 +198,7 @@ static void __exit stop_program(void)
 
 	if (limit_thread) {
 		int ret = kthread_stop(limit_thread);
-		
+
  		if(ret == 0)
   			printk(KERN_INFO "Thread stopped");
 	}
@@ -229,5 +207,6 @@ static void __exit stop_program(void)
 
 module_init(start_program);
 module_exit(stop_program);
+
 
 
