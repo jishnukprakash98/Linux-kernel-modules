@@ -6,6 +6,7 @@
 #include <linux/string.h>
 #include <linux/timekeeping32.h>
 #include <linux/ktime.h>
+#include <linux/time.h>
 #include <linux/timekeeping.h>
 
 MODULE_LICENSE("GPL");
@@ -63,10 +64,10 @@ void procs_info_print(void)
 		
 	for(i=0;i<10;i++)
 	{
-		pr_info("== name:%s\t\tpid:[%d]\t\tstarttime:[%llu]\t\tmemory:[%llu]\n",proc[i].name,proc[i].pid,proc[i].strtime/1000000000,proc[i].memsize);	
+		pr_info("== name:%s\t\tpid:[%d]\t\tstarttime:[%llu]s after boot\t\tmemory:[%llu]MB\n",proc[i].name,proc[i].pid,proc[i].strtime/1000000000,proc[i].memsize/(1024*1024));	
 	}
-	printk(KERN_INFO "== Number of process: %zu\n", process_counter);           
-        printk(KERN_INFO "== Time: %lu\n", ts_start.tv_nsec);
+	printk(KERN_INFO "== Number of process: %zu\n", process_counter);	         
+        printk(KERN_INFO "== Time: %lu\n", ts_start.tv_nsec/1000000000+ts_start.tv_sec);
     
      }
 
