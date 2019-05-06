@@ -19,6 +19,18 @@ struct list
    u64 memsize; 
 }proc[500],temp;
 
+static int is_kernel_proc(struct task_struct *task)
+{
+	if (task->parent) {
+		if (task->parent->pid == 0 ||
+				!strcmp(task->parent->comm, "kthreadd"))
+			return 1;
+		else
+			return 0;
+	}
+	else
+		return 1;
+}
 
 void procs_info_print(void)
 {
@@ -31,22 +43,24 @@ void procs_info_print(void)
 	
 	i=0;
    
-        for_each_process(task_list) {       
+        for_each_process(task_list) 
+        {       
         	
 		/*pr_info("== name:%s\tpid:[%d]\tstarttime:[%llu],[%llu],[%llu]\tmemory:[%llu]\n", task_list->comm,task_list->pid,task_list->start_time,(task_list->utime+task_list->stime),task_list->se.exec_start,task_list->acct_rss_mem1);
         	if((task_list->start_time)>ts_start.tv_nsec && (task_list->acct_rss_mem1)>1000000000)
             		{
             			pr_info("== name:%s\tpid:[%d]\tstarttime:[%llu],[%llu],[%llu]\tmemory:[%llu]\n", task_list->comm,task_list->pid,task_list->start_time,(task_list->utime+task_list->stime),task_list->se.exec_start,task_list->acct_rss_mem1);
 			}*/
-
-		strcpy(proc[i].name,task_list->comm);
-        	proc[i].pid=task_list->pid;
-        	proc[i].strtime=task_list->real_start_time;
-        	proc[i].memsize=task_list->acct_rss_mem1;
-        	++i;
+                if(!is_kernel_proc(task_list)) 
+                {
+		        strcpy(proc[i].name,task_list->comm);
+        	        proc[i].pid=task_list->pid;
+        	        proc[i].strtime=task_list->real_start_time;
+        	        proc[i].memsize=task_list->acct_rss_mem1;
+        	        ++i;
 	
-		++process_counter;
-
+		        ++process_counter;
+                }
         }
 	
 	for(i=0;i<process_counter-1;i++)
