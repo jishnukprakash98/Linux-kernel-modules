@@ -55,7 +55,7 @@ int thread_fn(void *a)
 	static struct file *fil;
 	static pid_t  pgrp, session_id;
 	static int size, i = 0, j = 0, tpgid = 0, no_of_bg = 0,k=0, count = 0;
-	bool in_array = false;
+	static bool in_array = false;
 	static mm_segment_t fs;
 	static int *array;
 
@@ -129,6 +129,7 @@ int thread_fn(void *a)
 					++i;
 				}
 				i = j = 0;
+				
 				in_array = false;
 				/*Filtering background processes and sending QUIT signal*/
 				if(session_id == shell_id && state != 'T' && pgrp != tpgid && task->pid != shell_id) {
@@ -140,17 +141,31 @@ int thread_fn(void *a)
 					INIT_LIST_HEAD(&temp->mylist);
 
 					//list_add(&temp->mylist,&proc_head);
-
 					
-					list_for_each_entry(temp, &proc_head, mylist) {
-			            		
-			            		if(temp->data == task->pid){
-			            			printk(KERN_INFO "DUP\n");
-			            			in_array = true;
-			            		}
+					//struct mystruct *temp;
 
+					/*
+					list_for_each_entry(temp, &proc_head, mylist) {
+			                        printk(KERN_INFO "Node %d data = %d\n", count, temp->data);
+			            
+			                }
+                                        */
+					printk(KERN_INFO "old in_array = %d\n", in_array);
+					list_for_each_entry(temp, &proc_head, mylist) {
+			            		 
+			            		if(temp->data == task->pid){
+			            			
+			            			in_array = true;
+			            			
+			            			//printk(KERN_INFO "DUP in_array = %d\n",in_array);
+			            		}
+                                                printk(KERN_INFO "Node %d data = %d\n",count++, temp->data);
 			        	}
-			        	if(!in_array) {
+			        	printk(KERN_INFO "new in_array = %d\n",in_array);
+			        	
+			        	
+			        	if(in_array == false) {
+			        	        printk(KERN_INFO "Adding %d", temp->data);
 						list_add(&temp->mylist,&proc_head);
 						count++;	
 					}
@@ -159,15 +174,11 @@ int thread_fn(void *a)
 				} 		
 			}
 		}
-		
-		
-     // printk(KERN_INFO "Node count : %d\n",count);
- 
-        
-        list_for_each_entry(temp, &proc_head, mylist) {
-            printk(KERN_INFO "Node %d data = %d\n", count++, temp->data);
+	/*	
+	list_for_each_entry(temp, &proc_head, mylist) {
+            printk(KERN_INFO "Node %d data = %d\n",count++, temp->data);
         }
- 
+        */
        printk(KERN_INFO "Total Nodes = %d\n", count);
 		ssleep(2);
 	}
