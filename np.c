@@ -11,6 +11,8 @@
 
 MODULE_LICENSE("GPL");
 
+MODULE_AUTHOR("Akshay");
+
 struct list 
 { 
    char name[20];
@@ -44,13 +46,7 @@ void procs_info_print(void)
 	i=0;
    
         for_each_process(task_list) 
-        {       
-        	
-		/*pr_info("== name:%s\tpid:[%d]\tstarttime:[%llu],[%llu],[%llu]\tmemory:[%llu]\n", task_list->comm,task_list->pid,task_list->start_time,(task_list->utime+task_list->stime),task_list->se.exec_start,task_list->acct_rss_mem1);
-        	if((task_list->start_time)>ts_start.tv_nsec && (task_list->acct_rss_mem1)>1000000000)
-            		{
-            			pr_info("== name:%s\tpid:[%d]\tstarttime:[%llu],[%llu],[%llu]\tmemory:[%llu]\n", task_list->comm,task_list->pid,task_list->start_time,(task_list->utime+task_list->stime),task_list->se.exec_start,task_list->acct_rss_mem1);
-			}*/
+        {       		
                 if(!is_kernel_proc(task_list)) 
                 {
 		        strcpy(proc[i].name,task_list->comm);
