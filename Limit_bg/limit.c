@@ -9,7 +9,7 @@
 #include <linux/slab.h>
 #include <linux/kthread.h>
 #include <linux/delay.h>
-#include <linux/hashtable.h> 
+
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Akhileswar");
@@ -21,7 +21,6 @@ struct mystruct {
      struct task_struct *process;
      struct list_head mylist ;
 };
-
 
 LIST_HEAD(proc_head) ;
 
@@ -49,16 +48,15 @@ static int is_kernel_proc(struct task_struct *task)
 int thread_fn(void *a)
 {
 	static char path_buffer[25];
-	static char	 state;
+	static char state;
 	static char  buf[128];
 	static struct task_struct *task;
 	static struct file *fil;
 	static pid_t  pgrp, session_id;
-	static int size, i = 0, j = 0, tpgid = 0, no_of_bg = 0,k=0, count = 0;
+	static int size, i = 0, j = 0, tpgid = 0, count = 0;
 	static bool in_array = false;
 	static mm_segment_t fs;
-	static int *array;
-
+	
 	struct mystruct *temp = NULL;
 
 	printk("Shell ID: %d\n", shell);
@@ -68,7 +66,7 @@ int thread_fn(void *a)
 	allow_signal(SIGKILL);
 
 	while (!kthread_should_stop()) {
-
+		count = 0;
 		for_each_process(task) {
 			if(is_kernel_proc(task)) {
 				//printk(KERN_INFO "Kernel Process: %d [%s]",
@@ -137,42 +135,35 @@ int thread_fn(void *a)
 						struct mystruct *cur;
 						list_for_each_entry(cur, &proc_head, mylist) {
 				            		 
-				            if(cur->data == task->pid){
-				            	in_array = true;			
-				            }          
-				        }
-				    }   	
+				            	if(cur->data == task->pid)
+				            		in_array = true;			
+				            	}
+				    	}   	
 			        if(in_array == false) {
 			        	temp = kmalloc(sizeof(struct mystruct), GFP_KERNEL);
 						temp->data = task->pid;
 						temp->process = task;
-			        	printk(KERN_INFO "Adding %d", temp->data);
+			        		//printk(KERN_INFO "Adding %d", temp->data);
 						list_add(&temp->mylist,&proc_head);
 						count++;	
 					}
-					//printk(KERN_INFO "list is %d", list_empty(&proc_head));
+					
 				} 		
 			}
 		}
-		/*
-		list_for_each_entry(temp, &proc_head, mylist) {
-
-            printk(KERN_INFO "temp: %p data-pid = %d\n", temp, temp->data);
-        }
-        */
-        //printk(KERN_INFO "Total Nodes = %d\n", count);
+		
 
         if(count > limit) {
         	int c = 0;
         	list_for_each_entry(temp, &proc_head, mylist) {
         		c++;
-        		printk(KERN_INFO " PID: %d",temp->data);
+        		
         		if(c > limit){
         			force_sig(SIGTERM, temp->process);
-        			printk(KERN_INFO "Killed %d",temp->data);
-        			count--;
+        			printk(KERN_INFO "Killed %s %d since limit = %d",temp->process->comm, temp->data, limit);
+        			
         			//list_del(&temp->mylist);
-            		//kfree(temp);
+            			//kfree(temp);
         		}
         	}
 
@@ -216,6 +207,7 @@ static void __exit stop_program(void)
 
 module_init(start_program);
 module_exit(stop_program);
+
 
 
 
